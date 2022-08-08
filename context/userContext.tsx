@@ -19,9 +19,13 @@ const UserProvider: React.FC<ReactProps> = ({ children }) => {
 	};
 
 	const [phone, setPhone] = React.useState<string>("");
-
 	const savePhone = (phone: string) => {
 		setPhone(phone);
+	};
+
+	const [email, setEmail] = React.useState<string>("");
+	const saveEmail = (email: string) => {
+		setEmail(email);
 	};
 
 	const [jwtToken, setJwtToken] = React.useState<string>("");
@@ -31,7 +35,7 @@ const UserProvider: React.FC<ReactProps> = ({ children }) => {
 
 	return (
 		<UserContext.Provider
-			value={{ userSignUp, phone, jwtToken, saveUserSignUp, savePhone, saveJwtToken }}
+			value={{ userSignUp, phone, jwtToken, email, saveUserSignUp, savePhone, saveJwtToken, saveEmail }}
 		>
 			{children}
 		</UserContext.Provider>

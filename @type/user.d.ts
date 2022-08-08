@@ -7,8 +7,10 @@ export interface IUserSignUp {
 export type UserContextType = {
 	userSignUp: IUserSignUp;
 	phone: string;
+	email: string;
 	jwtToken: string;
 	saveUserSignUp: (userSignUp: IUserSignUp) => void;
 	savePhone: (phone: string) => void;
 	saveJwtToken: (jwtToken: string) => void;
+	saveEmail: (email: string) => void;
 };

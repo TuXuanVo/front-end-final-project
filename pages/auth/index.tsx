@@ -137,6 +137,22 @@ const Signin: NextPage = () => {
 		}
 	};
 
+	const loginWithGoogle = () => {
+		try {
+			window.open(`${process.env.NEXT_PUBLIC_URL_LOGIN_WITH_GOOGLE}`, "_self");
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	const loginWithFacebook = () => {
+		try {
+			window.open(`${process.env.NEXT_PUBLIC_URL_LOGIN_WITH_FACEBOOK}`, "_self");
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
 	return (
 		<div className="flex flex-col justify-center px-64">
 			<section className="flex flex-col border-b-2 pb-2">
@@ -145,16 +161,10 @@ const Signin: NextPage = () => {
 				<button className="border rounded-md bg-blue-400 text-white">Submit</button>
 			</section>
 			<section className="flex flex-col mt-2">
-				<button
-					className="border rounded-md bg-red-500 text-white mb-2"
-					onClick={() => signIn("google")}
-				>
+				<button className="border rounded-md bg-red-500 text-white mb-2" onClick={loginWithGoogle}>
 					Sigin with Google
 				</button>
-				<button
-					className="border rounded-md bg-blue-400 text-white"
-					onClick={() => signIn("facebook")}
-				>
+				<button className="border rounded-md bg-blue-400 text-white" onClick={loginWithFacebook}>
 					Sigin with Facebook
 				</button>
 			</section>
