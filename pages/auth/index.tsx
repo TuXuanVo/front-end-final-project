@@ -13,10 +13,17 @@ import { UserContextType } from "../../@type/user";
 import { useRouter } from "next/router";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { useCookies } from "react-cookie";
 
 const Signin: NextPage = () => {
 	const router = useRouter();
 	const { savePhone } = useContext(UserContext) as UserContextType;
+	const [cookies, setCookie, removeCookie] = useCookies(["errMessage"]);
+	console.log(cookies.errMessage);
+	if (cookies.errMessage) {
+		alert(cookies.errMessage);
+		removeCookie("errMessage");
+	}
 
 	// const firebaseAuth = getAuth(firebaseApp);
 	// const googleProvider = new GoogleAuthProvider();
