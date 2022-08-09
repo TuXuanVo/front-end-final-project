@@ -12,7 +12,8 @@ const OTP: NextPage = () => {
 	const [cookies, setCookie] = useCookies(["userEmail"]);
 	console.log("email cookie: ", cookies.userEmail);
 
-	const { userSignUp, saveJwtToken } = useContext(UserContext) as UserContextType;
+	const { phone, userSignUp, saveJwtToken } = useContext(UserContext) as UserContextType;
+	console.log("phone: ", phone);
 
 	const formikOTP = useFormik({
 		initialValues: {
@@ -24,36 +25,39 @@ const OTP: NextPage = () => {
 				.matches(/^[0-9]*$/, "OTP only contains number")
 				.required("Required"),
 		}),
-		onSubmit: (values) => {
+		onSubmit: async (values) => {
 			console.log("OTP: ", values.otp);
 
-			fetch(`${process.env.NEXT_PUBLIC_URL_VERIFY_OTP_LOGIN}`, {
+			let body = {};
+			if (phone) {
+				body = {
+					phone,
+				};
+			} else if (cookies.userEmail) {
+				body = {
+					email: cookies.userEmail,
+				};
+			}
+
+			const response = await fetch(`${process.env.NEXT_PUBLIC_URL_VERIFY_OTP_LOGIN}`, {
 				method: "POST",
 				body: JSON.stringify({
-					email: cookies.userEmail,
+					...body,
 					otp: values.otp,
 				}),
 				headers: {
 					"Content-Type": "application/json",
 				},
-			})
-				.then((response) => response.json())
-				.then((res) => {
-					if (res.message === "LOGIN_SOCIAL_SUCCESSFULLY") {
-						console.log(res);
-						saveJwtToken(res.data.token);
-						router.push("/");
-					} else {
-						console.log(res);
-						alert(res.error);
-					}
-				})
-				.catch((error) => {
-					console.log(error);
-					if ("error" in error) {
-						alert(error.error);
-					}
-				});
+			});
+
+			const result = await response.json();
+			if (!response.ok) {
+				alert(result.error);
+			} else {
+				console.log(result);
+				saveJwtToken(result.data.token);
+				router.push("/");
+			}
 		},
 	});
 

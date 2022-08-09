@@ -33,9 +33,25 @@ const UserProvider: React.FC<ReactProps> = ({ children }) => {
 		setJwtToken(jwtToken);
 	};
 
+	const [error, setError] = React.useState<string>("");
+	const saveError = (error: string) => {
+		setError(error);
+	};
+
 	return (
 		<UserContext.Provider
-			value={{ userSignUp, phone, jwtToken, email, saveUserSignUp, savePhone, saveJwtToken, saveEmail }}
+			value={{
+				userSignUp,
+				phone,
+				jwtToken,
+				email,
+				error,
+				saveUserSignUp,
+				savePhone,
+				saveJwtToken,
+				saveEmail,
+				saveError,
+			}}
 		>
 			{children}
 		</UserContext.Provider>

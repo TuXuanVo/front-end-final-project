@@ -26,8 +26,8 @@ const SignUp: NextPage = () => {
 				.matches(/^[0-9]*$/, "Phone only contains number")
 				.required("Required"),
 		}),
-		onSubmit: (values) => {
-			fetch(`${process.env.NEXT_PUBLIC_URL_SEND_OTP_REGISTER}`, {
+		onSubmit: async (values) => {
+			const response = await fetch(`${process.env.NEXT_PUBLIC_URL_SEND_OTP_REGISTER}`, {
 				method: "POST",
 				body: JSON.stringify({
 					phone: values.phone,
@@ -36,24 +36,16 @@ const SignUp: NextPage = () => {
 				headers: {
 					"Content-Type": "application/json",
 				},
-			})
-				.then((response) => response.json())
-				.then((res) => {
-					if (res.message === "SEND_OTP_SUCCESSFULLY") {
-						savePhone(values.phone);
-						console.log("begin set step");
-						setStep(1);
-					} else {
-						console.log("loi :", res);
-						alert(res.error);
-					}
-				})
-				.catch((error) => {
-					console.log("loi catch fetch: ", error);
-					if ("error" in error) {
-						alert(error.error);
-					}
-				});
+			});
+
+			if (!response.ok) {
+				const errorResult = await response.json();
+				alert(errorResult.error);
+			} else {
+				savePhone(values.phone);
+				console.log("begin set step");
+				setStep(1);
+			}
 		},
 	});
 
@@ -67,10 +59,10 @@ const SignUp: NextPage = () => {
 				.matches(/^[0-9]*$/, "OTP only contains number")
 				.required("Required"),
 		}),
-		onSubmit: (values) => {
+		onSubmit: async (values) => {
 			console.log("OTP: ", values.otp);
 
-			fetch(`${process.env.NEXT_PUBLIC_URL_VERIFY_OTP_LOGIN}`, {
+			const response = await fetch(`${process.env.NEXT_PUBLIC_URL_VERIFY_OTP_LOGIN}`, {
 				method: "POST",
 				body: JSON.stringify({
 					email: cookies.userEmail,
@@ -79,21 +71,16 @@ const SignUp: NextPage = () => {
 				headers: {
 					"Content-Type": "application/json",
 				},
-			})
-				.then((response) => response.json())
-				.then((res) => {
-					if (res.message === "LOGIN_SOCIAL_SUCCESSFULLY") {
-						console.log(res);
-						saveJwtToken(res.data.token);
-						router.push("/");
-					} else {
-						console.log(res);
-						alert(res.error);
-					}
-				})
-				.catch((error) => {
-					alert(error.error);
-				});
+			});
+
+			const result = await response.json();
+			if (!response.ok) {
+				alert(result.error);
+			} else {
+				console.log(result);
+				saveJwtToken(result.data.token);
+				router.push("/");
+			}
 		},
 	});
 
