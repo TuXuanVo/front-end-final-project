@@ -14,6 +14,7 @@ import { useRouter } from "next/router";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useCookies } from "react-cookie";
+import Link from "next/link";
 
 const Signin: NextPage = () => {
 	const router = useRouter();
@@ -165,7 +166,7 @@ const Signin: NextPage = () => {
 				.required("Required"),
 		}),
 		onSubmit: async (values) => {
-			const response = await fetch(`${process.env.NEXT_PUBLIC_URL_LOGIN_WITH_PHONE}`, {
+			const response = await fetch(`${process.env.NEXT_PUBLIC_URL_LOGIN_WITH_PHONE_LOGIN}`, {
 				method: "POST",
 				body: JSON.stringify({
 					phone: values.phone,
@@ -187,6 +188,7 @@ const Signin: NextPage = () => {
 
 	return (
 		<div className="flex flex-col justify-center px-64">
+			<h1>Login page</h1>
 			<section className="flex flex-col border-b-2 pb-2">
 				<form onSubmit={formikPhone.handleSubmit} className="flex flex-col">
 					<label htmlFor="phone">Phone</label>
@@ -212,6 +214,9 @@ const Signin: NextPage = () => {
 				<button className="border rounded-md bg-blue-400 text-white" onClick={loginWithFacebook}>
 					Sigin with Facebook
 				</button>
+			</section>
+			<section>
+				<Link href="/auth/signup">Register with phone</Link>
 			</section>
 		</div>
 	);

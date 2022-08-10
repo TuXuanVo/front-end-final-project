@@ -63,6 +63,7 @@ const OTP: NextPage = () => {
 
 	return (
 		<section className="flex justify-center px-20">
+			<h1>OTP page</h1>
 			<form onSubmit={formikOTP.handleSubmit} className="flex flex-col">
 				<label htmlFor="otp">OTP</label>
 				<input

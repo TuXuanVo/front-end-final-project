@@ -12,9 +12,7 @@ const SignUp: NextPage = () => {
 	const [cookies, setCookie] = useCookies(["userEmail"]);
 	console.log("email cookie: ", cookies.userEmail);
 
-	const [step, setStep] = useState(0);
-	const { email, phone, saveJwtToken, savePhone, saveEmail } = useContext(UserContext) as UserContextType;
-	console.log(phone);
+	const { saveJwtToken, savePhone } = useContext(UserContext) as UserContextType;
 
 	const formikPhone = useFormik({
 		initialValues: {
@@ -27,66 +25,52 @@ const SignUp: NextPage = () => {
 				.required("Required"),
 		}),
 		onSubmit: async (values) => {
-			const response = await fetch(`${process.env.NEXT_PUBLIC_URL_SEND_OTP_REGISTER}`, {
-				method: "POST",
-				body: JSON.stringify({
-					phone: values.phone,
-					email: cookies.userEmail,
-				}),
-				headers: {
-					"Content-Type": "application/json",
-				},
-			});
+			if (cookies.userEmail) {
+				const response = await fetch(`${process.env.NEXT_PUBLIC_URL_SEND_OTP_REGISTER}`, {
+					method: "POST",
+					body: JSON.stringify({
+						phone: values.phone,
+						email: cookies.userEmail,
+					}),
+					headers: {
+						"Content-Type": "application/json",
+					},
+				});
 
-			if (!response.ok) {
-				const errorResult = await response.json();
-				alert(errorResult.error);
+				if (!response.ok) {
+					const errorResult = await response.json();
+					alert(errorResult.error);
+				} else {
+					alert("Verify phone successfully. Next enter OTP.");
+					router.push("/auth/otp");
+				}
 			} else {
-				savePhone(values.phone);
-				console.log("begin set step");
-				setStep(1);
-			}
-		},
-	});
+				const response = await fetch(`${process.env.NEXT_PUBLIC_URL_LOGIN_WITH_PHONE_REGISTER}`, {
+					method: "POST",
+					body: JSON.stringify({
+						phone: values.phone,
+					}),
+					headers: {
+						"Content-Type": "application/json",
+					},
+				});
 
-	const formikOTP = useFormik({
-		initialValues: {
-			otp: "",
-		},
-		validationSchema: Yup.object().shape({
-			otp: Yup.string()
-				.length(6, "OTP must be contain 6 numbers!")
-				.matches(/^[0-9]*$/, "OTP only contains number")
-				.required("Required"),
-		}),
-		onSubmit: async (values) => {
-			console.log("OTP: ", values.otp);
-
-			const response = await fetch(`${process.env.NEXT_PUBLIC_URL_VERIFY_OTP_LOGIN}`, {
-				method: "POST",
-				body: JSON.stringify({
-					email: cookies.userEmail,
-					otp: values.otp,
-				}),
-				headers: {
-					"Content-Type": "application/json",
-				},
-			});
-
-			const result = await response.json();
-			if (!response.ok) {
-				alert(result.error);
-			} else {
-				console.log(result);
-				saveJwtToken(result.data.token);
-				router.push("/");
+				if (!response.ok) {
+					const errorResult = await response.json();
+					alert(errorResult.error);
+				} else {
+					savePhone(values.phone);
+					alert("Register phone successfully. Next enter OTP.");
+					router.push("/auth/otp");
+				}
 			}
 		},
 	});
 
 	return (
-		<section className="flex justify-center px-20">
-			{step === 0 ? (
+		<>
+			<h1>Register phone page</h1>
+			<section className="flex justify-center px-20">
 				<form onSubmit={formikPhone.handleSubmit} className="flex flex-col">
 					<label htmlFor="phone">Phone</label>
 					<input
@@ -103,25 +87,8 @@ const SignUp: NextPage = () => {
 						Submit
 					</button>
 				</form>
-			) : (
-				<form onSubmit={formikOTP.handleSubmit} className="flex flex-col">
-					<label htmlFor="otp">OTP</label>
-					<input
-						type="text"
-						name="otp"
-						id="otp"
-						className="border rounded mb-3"
-						onChange={formikOTP.handleChange}
-					/>
-					{formikOTP.touched.otp && formikOTP.errors.otp ? (
-						<div className="text-red-500">* {formikOTP.errors.otp}</div>
-					) : null}
-					<button className="py-1 rounded bg-blue-400 text-white" type="submit">
-						Submit
-					</button>
-				</form>
-			)}
-		</section>
+			</section>
+		</>
 	);
 };
 
